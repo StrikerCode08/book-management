@@ -6,6 +6,7 @@ interface IBook extends Document {
     author: string;
     isbn: string;
     available: boolean;
+    _id:mongoose.Types.ObjectId;
 }
 
 // Create a Schema corresponding to the document interface

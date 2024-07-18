@@ -1,6 +1,5 @@
 import express, { Request, Response, NextFunction } from "express";
 import user from "./routes/user";
-import admin from "./routes/admin";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
@@ -10,7 +9,6 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use("/api/v1/user", user);
-app.use("/api/v1/admin", admin);
 
 // Error Handling middleware
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

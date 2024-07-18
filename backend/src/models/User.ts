@@ -2,10 +2,15 @@ import mongoose, { Schema, Document } from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from 'jsonwebtoken';
 // Define an interface representing a User document in MongoDB
+enum Role {
+    User = 'user',
+    Admin = 'admin',
+  }
 interface IUser extends Document {
   userName: string;
   password: string;
   name: string;
+  role: Role;
   borrowedBooks: mongoose.Types.ObjectId[];
   matchPassword(candidatePassword: string): Promise<boolean>;
   generateToken:(id:string)=>string;
@@ -13,11 +18,12 @@ interface IUser extends Document {
 }
 
 // Create a Schema corresponding to the document interface
-const UserSchema: Schema = new Schema({
+const UserSchema: Schema = new Schema<IUser>({
   userName: { type: String, required: true },
   password: { type: String, required: true, unique: true },
   name: { type: String, required: true },
   borrowedBooks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Book" }],
+  role: { type: String, enum: Object.values(Role), default: Role.User }
 });
 // Password hashing middleware
 UserSchema.pre<IUser>("save", async function (next) {
