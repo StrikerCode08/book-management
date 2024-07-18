@@ -1,14 +1,10 @@
 // src/seed.ts
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import {User} from './models/User';
+import {User,Role} from './models/User';
 import bcrypt from 'bcryptjs';
 
 dotenv.config();
-enum Role {
-  User = 'user',
-  Admin = 'admin',
-}
 const seedDB = async () => {
   try {
     // Connect to the database

@@ -47,4 +47,4 @@ UserSchema.methods.generateToken = (id: string) => {
 // Create a User model
 const User = mongoose.model<IUser>("User", UserSchema);
 
-export { User, IUser };
+export { User, IUser,Role };

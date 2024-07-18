@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import authenticateToken from "../middleware/userAuth";
 import { Book } from "../models/Book";
 import { authenticateAdmin } from "../middleware/adminAuth";
+import { Role } from "../models/User";
 const router = Router();
 
 router.post("/signup", async (req: Request, res: Response) => {
@@ -26,6 +27,7 @@ router.post("/signup", async (req: Request, res: Response) => {
         name: user.name,
         userName: user.userName,
         token: user.generateToken(user._id),
+        role: Role.User
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
