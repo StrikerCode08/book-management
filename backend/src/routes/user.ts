@@ -43,7 +43,7 @@ router.post("/login", async (req: Request, res: Response) => {
     if (!user || !(await user.matchPassword(password))) {
       throw new Error("Invalid email or password");
     }
-    const token = jwt.sign({ id: user._id }, `${process.env.JWT_SECRET}`, {
+    const token = jwt.sign({ user: user.role }, `${process.env.JWT_SECRET}`, {
       expiresIn: "1h",
     });
     res.status(200).send({ token });
@@ -93,9 +93,9 @@ router.post('/return', authenticateToken, async (req: Request, res: Response) =>
     }
 });
 router.post("/add", authenticateToken, authenticateAdmin, async (req: Request, res: Response) => {
-  const { title, author, genre } = req.body;
+  const { title, author, isbn,available } = req.body;
   try {
-    const newBook = new Book({ title, author, genre });
+    const newBook = new Book({ title, author, isbn,available });
     await newBook.save();
     res.status(201).send(newBook);
   } catch (error) {
