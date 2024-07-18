@@ -8,16 +8,16 @@ dotenv.config();
 const seedDB = async () => {
   try {
     // Connect to the database
-    await mongoose.connect(process.env.MONGODB_URI!);
+    await mongoose.connect(process.env.MONGODB_URL!);
 
     // Check if admin user already exists
     const adminUser = await User.findOne({ role: Role.Admin });
     if (!adminUser) {
       // Create admin user
-      const hashedPassword = await bcrypt.hash(process.env.ADMIN_PASSWORD!, 10);
       const newAdmin = new User({
-        username: process.env.ADMIN_USERNAME,
-        password: hashedPassword,
+        userName: process.env.ADMIN_USERNAME,
+        password: process.env.ADMIN_PASSWORD,
+        name:process.env.ADMIN_NAME,
         role: Role.Admin,
       });
       await newAdmin.save();
