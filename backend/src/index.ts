@@ -1,6 +1,10 @@
 import express, { Request, Response, NextFunction } from "express";
 import user from "./routes/user";
 import admin from "./routes/admin";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -14,6 +18,12 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send("Something went wrong");
 });
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+mongoose
+  .connect(`${process.env.MONGODB_URL}`)
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`DB got Connected`);
+      console.log(`Server running at http://localhost:${port}`);
+    });
+  })
+  .catch((err) => console.error("Could not connect to MongoDB...", err));
