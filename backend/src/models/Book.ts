@@ -4,7 +4,6 @@ import mongoose, { Schema, Document } from 'mongoose';
 interface IBook extends Document {
     title: string;
     author: string;
-    isbn: string;
     available: boolean;
     _id:mongoose.Types.ObjectId;
 }
@@ -13,7 +12,6 @@ interface IBook extends Document {
 const BookSchema: Schema = new Schema({
     title: { type: String, required: true },
     author: { type: String, required: true },
-    isbn: { type: String, required: true, unique: true },
     available: { type: Boolean, default: true }
 });
 

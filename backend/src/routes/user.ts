@@ -93,9 +93,9 @@ router.post('/return', authenticateToken, async (req: Request, res: Response) =>
     }
 });
 router.post("/add", authenticateToken, authenticateAdmin, async (req: Request, res: Response) => {
-  const { title, author, isbn,available } = req.body;
+  const { title, author,available } = req.body;
   try {
-    const newBook = new Book({ title, author, isbn,available });
+    const newBook = new Book({ title,author,available });
     await newBook.save();
     res.status(201).send(newBook);
   } catch (error) {
@@ -133,4 +133,26 @@ router.delete("/delete/:id", authenticateToken, authenticateAdmin, async (req: R
     }
   }
 );
+router.get('/books/available', authenticateToken, async (req: Request, res: Response) => {
+    try {
+        const books = await Book.find({ available: true });
+        res.status(200).send(books);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
+
+// Route to get books borrowed by the authenticated user
+router.get('/books/borrowed/:user_id', authenticateToken, async (req: Request, res: Response) => {
+    const {user_id} = req.params
+    try {
+        const user = await User.findById(user_id).populate('borrowedBooks');
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        res.status(200).send(user.borrowedBooks);
+    } catch (error) {
+        res.status(400).send(error);
+    }
+});
 export default router;
