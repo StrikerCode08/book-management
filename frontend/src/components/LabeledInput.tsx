@@ -3,14 +3,18 @@ interface Inputlabel {
   name: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder: string;
-  label:string
+  label:string;
+  value:string;
+  error?:string
 }
 export default function LabeledInput({
   type,
   name,
   placeholder,
   onChange,
-  label
+  label,
+  value,
+  error
 }: Inputlabel) {
   return (
     <div className="flex flex-col justify-center">
@@ -21,7 +25,10 @@ export default function LabeledInput({
         id={name}
         placeholder={placeholder}
         onChange={onChange}
+        value={value}
+        required
       />
+      {error && <span style={{ color: 'red' }}>{error}</span>}
     </div>
   );
 }
