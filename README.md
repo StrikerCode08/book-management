@@ -3,13 +3,13 @@
 Book Management
 ## Introduction
 
-A more detailed description of your project and its purpose.
+A simple book management system with complex authroization and role based authentication
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+- Only Admins can add remove and update books 
+- One book can be borrowed by a single user at once 
+- Once returned other users can also borrow it
 
 ## Technologies Used
 
