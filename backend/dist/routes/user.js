@@ -29,13 +29,16 @@ router.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function*
             return;
         }
         const user = new User_1.User({ name, userName, password });
+        const token = jsonwebtoken_1.default.sign({ user: User_2.Role.User }, `${process.env.JWT_SECRET}`, {
+            expiresIn: `${process.env.JWT_EXPIRY}`,
+        });
         if (user) {
             yield user.save();
             res.status(201).json({
                 _id: user._id,
                 name: user.name,
                 userName: user.userName,
-                token: user.generateToken(user._id),
+                token: token,
                 role: User_2.Role.User
             });
         }
@@ -55,7 +58,7 @@ router.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             throw new Error("Invalid email or password");
         }
         const token = jsonwebtoken_1.default.sign({ user: user.role }, `${process.env.JWT_SECRET}`, {
-            expiresIn: "1h",
+            expiresIn: `${process.env.JWT_EXPIRY}`,
         });
         res.status(200).send({
             _id: user._id,
@@ -109,9 +112,9 @@ router.post('/return', userAuth_1.default, (req, res) => __awaiter(void 0, void 
     }
 }));
 router.post("/add", userAuth_1.default, adminAuth_1.authenticateAdmin, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, author, available } = req.body;
+    const { title, author } = req.body;
     try {
-        const newBook = new Book_1.Book({ title, author, available: available || false });
+        const newBook = new Book_1.Book({ title, author });
         yield newBook.save();
         res.status(201).send(newBook);
     }
@@ -149,22 +152,21 @@ router.delete("/delete/:id", userAuth_1.default, adminAuth_1.authenticateAdmin, 
 router.get('/books/available', userAuth_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.query.userId;
-        // If userId is provided, find the user and get their borrowed books
+        let borrowedBookIds = [];
         if (userId) {
             const user = yield User_1.User.findById(userId).populate('borrowedBooks');
             if (!user) {
                 return res.status(404).send({ error: 'User not found' });
             }
-            const borrowedBookIds = user.borrowedBooks.map(book => book._id);
-            const books = yield Book_1.Book.find({ _id: { $in: borrowedBookIds }, available: true });
-            return res.status(200).send(books);
+            borrowedBookIds = user.borrowedBooks.map((book) => book._id.toString());
         }
-        // If no userId is provided, return all available books
-        const books = yield Book_1.Book.find({ available: true });
-        res.status(200).send(books);
+        const books = yield Book_1.Book.find();
+        const booksWithBorrowedStatus = books.map((book) => (Object.assign(Object.assign({}, book.toObject()), { bookBorrowed: borrowedBookIds.includes(book._id.toString()) })));
+        res.status(200).send(booksWithBorrowedStatus);
     }
     catch (error) {
-        res.status(400).send(error);
+        console.error(error); // Log the error for debugging purposes
+        res.status(500).send({ error: 'Internal server error' });
     }
 }));
 // Route to get books borrowed by the authenticated user

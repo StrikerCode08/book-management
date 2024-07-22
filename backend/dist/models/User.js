@@ -38,7 +38,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Role = exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 // Define an interface representing a User document in MongoDB
 var Role;
 (function (Role) {
@@ -67,12 +66,6 @@ UserSchema.pre("save", function (next) {
 UserSchema.methods.matchPassword = function (enteredPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcryptjs_1.default.compare(enteredPassword, this.password);
-    });
-};
-//Method to generate JWT
-UserSchema.methods.generateToken = (id) => {
-    return jsonwebtoken_1.default.sign({ id }, `${process.env.JWT_SECRECT}`, {
-        expiresIn: `${process.env.JWT_EXPIRY}`,
     });
 };
 // Create a User model
