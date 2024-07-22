@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.Role = exports.User = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -44,7 +44,7 @@ var Role;
 (function (Role) {
     Role["User"] = "user";
     Role["Admin"] = "admin";
-})(Role || (Role = {}));
+})(Role || (exports.Role = Role = {}));
 // Create a Schema corresponding to the document interface
 const UserSchema = new mongoose_1.Schema({
     userName: { type: String, required: true },

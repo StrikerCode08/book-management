@@ -29,7 +29,6 @@ const mongoose_1 = __importStar(require("mongoose"));
 const BookSchema = new mongoose_1.Schema({
     title: { type: String, required: true },
     author: { type: String, required: true },
-    isbn: { type: String, required: true, unique: true },
     available: { type: Boolean, default: true }
 });
 // Create a Book model

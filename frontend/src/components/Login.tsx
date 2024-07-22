@@ -52,7 +52,11 @@ export default function Login() {
         data
       );
       if (res.status === 200) {
+        console.log(res.data);
+        
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data._id);
+        localStorage.setItem("role", res.data.role);
         navigate("/booklist");
       } else {
         alert("Invalid Inputs");
@@ -78,13 +82,14 @@ export default function Login() {
   };
   return (
     <div className="flex justify-center h-screen items-center">
-      <div>
+      <div className="flex flex-col gap-y-8 items-center">
         <h1 className="mb-4 text-2xl font-bold leading-none tracking-tight text-black-600">
           Login
         </h1>
         <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">
           Not Registered? <NavLink to={"/signup"}>Register</NavLink>
         </p>
+        <div className="gap-y-8 flex flex-col">
         <LabeledInput
           type={"text"}
           onChange={handlechange}
@@ -110,6 +115,7 @@ export default function Login() {
         >
           Login
         </button>
+        </div>
       </div>
     </div>
   );

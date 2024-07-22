@@ -52,9 +52,11 @@ export default function Signup() {
     }
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_APP_URL}/user/login`, data);
-      if (res.status === 200) {
-        localStorage.setItem('token', res.data.token);
+      const res = await axios.post(`${import.meta.env.VITE_APP_URL}/user/signup`, data);
+      if (res.status === 201) {
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("userId", res.data._id);
+        localStorage.setItem("role", res.data.role);
         navigate('/booklist');
       } else {
         alert('Invalid Inputs');
@@ -80,7 +82,7 @@ export default function Signup() {
   };
   return (
     <div className="flex justify-center h-screen items-center"> 
-      <div className="">
+      <div className="flex flex-col gap-y-8">
       <h1 className="mb-4 text-2xl font-bold leading-none tracking-tight text-black-600">Sign Up</h1>
       <p className="mb-6 text-lg font-normal text-gray-500 lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400">Already Registered? <NavLink to={'/login'}>Login</NavLink></p>
       <LabeledInput

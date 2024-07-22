@@ -37,12 +37,6 @@ UserSchema.pre<IUser>("save", async function (next) {
 UserSchema.methods.matchPassword = async function (enteredPassword: string) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-//Method to generate JWT
-UserSchema.methods.generateToken = (id: string) => {
-    return jwt.sign({ id }, `${process.env.JWT_SECRECT}`, {
-        expiresIn: `${process.env.JWT_EXPIRY}`,
-    });
-};
 
 // Create a User model
 const User = mongoose.model<IUser>("User", UserSchema);

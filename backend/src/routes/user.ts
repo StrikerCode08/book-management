@@ -19,14 +19,16 @@ router.post("/signup", async (req: Request, res: Response) => {
     }
 
     const user = new User({ name, userName, password });
-
+    const token = jwt.sign({ user: Role.User }, `${process.env.JWT_SECRET}`, {
+      expiresIn: `${process.env.JWT_EXPIRY}`,
+    });
     if (user) {
       await user.save();
       res.status(201).json({
         _id: user._id,
         name: user.name,
         userName: user.userName,
-        token: user.generateToken(user._id),
+        token: token,
         role: Role.User
       });
     } else {
@@ -44,9 +46,15 @@ router.post("/login", async (req: Request, res: Response) => {
       throw new Error("Invalid email or password");
     }
     const token = jwt.sign({ user: user.role }, `${process.env.JWT_SECRET}`, {
-      expiresIn: "1h",
+      expiresIn: `${process.env.JWT_EXPIRY}`,
     });
-    res.status(200).send({ token });
+    res.status(200).send({ 
+        _id: user._id,
+        name: user.name,
+        userName: user.userName,
+        token: token,
+        role: user.role
+     });
   } catch (error) {
     res.status(400).send(error);
   }
@@ -93,9 +101,9 @@ router.post('/return', authenticateToken, async (req: Request, res: Response) =>
     }
 });
 router.post("/add", authenticateToken, authenticateAdmin, async (req: Request, res: Response) => {
-  const { title, author,available } = req.body;
+  const { title, author } = req.body;
   try {
-    const newBook = new Book({ title,author,available });
+    const newBook = new Book({ title,author });
     await newBook.save();
     res.status(201).send(newBook);
   } catch (error) {
@@ -134,12 +142,29 @@ router.delete("/delete/:id", authenticateToken, authenticateAdmin, async (req: R
   }
 );
 router.get('/books/available', authenticateToken, async (req: Request, res: Response) => {
-    try {
-        const books = await Book.find({ available: true });
-        res.status(200).send(books);
-    } catch (error) {
-        res.status(400).send(error);
+  try {
+    const userId = req.query.userId as string;
+    let borrowedBookIds: any[] = [];
+
+    if (userId) {
+        const user = await User.findById(userId).populate('borrowedBooks');
+        if (!user) {
+            return res.status(404).send({ error: 'User not found' });
+        }
+        borrowedBookIds = user.borrowedBooks.map((book: any) => book._id.toString());
     }
+
+    const books = await Book.find();
+    const booksWithBorrowedStatus = books.map((book: any) => ({
+        ...book.toObject(),
+        bookBorrowed: borrowedBookIds.includes(book._id.toString())
+    }));
+
+    res.status(200).send(booksWithBorrowedStatus);
+} catch (error) {
+    console.error(error); // Log the error for debugging purposes
+    res.status(500).send({ error: 'Internal server error' });
+}
 });
 
 // Route to get books borrowed by the authenticated user
